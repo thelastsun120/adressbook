@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QComboBox;
@@ -16,9 +15,6 @@ struct Person {
     QString phone;
     QString qq;
     QString category;
-
-    QString serialize() const;
-    static bool deserialize(const QString &line, Person &out);
 };
 
 class MainWindow : public QMainWindow {
@@ -26,6 +22,7 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 private slots:
     void addContact();
@@ -38,7 +35,6 @@ private slots:
     void saveContacts();
 
 private:
-    QVector<Person> contacts;
     QString dataFile;
 
     QTableWidget *table;
@@ -50,10 +46,11 @@ private:
     QLineEdit *searchEdit;
 
     void setupUi();
-    void loadContacts();
-    void refreshTable(const QVector<Person> &data);
+    bool initDatabase();
+    void loadFromTextIfDbEmpty();
+    void refreshTable(const QList<Person> &data);
+    QList<Person> queryContacts(const QString &whereClause = QString(), const QVariantList &args = {}) const;
     Person formPerson() const;
-    int findIndexByName(const QString &name) const;
     void clearForm();
 };
 
