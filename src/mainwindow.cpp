@@ -21,7 +21,7 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), dataFile("contacts.txt") {
     setupUi();
     if (!initDatabase()) {
-        QMessageBox::critical(this, "错误", "数据库连接失败，程序将退出。");
+        QMessageBox::critical(this, "错误", "MySQL 数据库连接失败，请检查主机/端口/用户名/密码。程序将退出。");
         close();
         return;
     }
@@ -34,7 +34,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::setupUi() {
-    setWindowTitle("通讯录管理系统（Qt + SQLite）");
+    setWindowTitle("通讯录管理系统（Qt + MySQL）");
     resize(980, 640);
 
     auto *central = new QWidget(this);
@@ -118,18 +118,22 @@ void MainWindow::setupUi() {
 }
 
 bool MainWindow::initDatabase() {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("addressbook.db");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("127.0.0.1");
+    db.setPort(3306);
+    db.setDatabaseName("addressbook_db");
+    db.setUserName("root");
+    db.setPassword("123456");
     if (!db.open()) return false;
 
     QSqlQuery query;
     return query.exec("CREATE TABLE IF NOT EXISTS contacts ("
-                      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                      "name TEXT NOT NULL,"
-                      "gender TEXT NOT NULL,"
-                      "phone TEXT NOT NULL UNIQUE,"
-                      "qq TEXT,"
-                      "category TEXT)");
+                      "id INT PRIMARY KEY AUTO_INCREMENT,"
+                      "name VARCHAR(50) NOT NULL,"
+                      "gender VARCHAR(10) NOT NULL,"
+                      "phone VARCHAR(20) NOT NULL UNIQUE,"
+                      "qq VARCHAR(20),"
+                      "category VARCHAR(50)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 }
 
 void MainWindow::loadFromTextIfDbEmpty() {
