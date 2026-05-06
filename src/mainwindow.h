@@ -7,6 +7,7 @@ QT_BEGIN_NAMESPACE
 class QComboBox;
 class QLineEdit;
 class QTableWidget;
+class QLabel;
 QT_END_NAMESPACE
 
 struct Person {
@@ -36,6 +37,11 @@ private slots:
 
 private:
     QString dataFile;
+    QString dbHost;
+    int dbPort;
+    QString dbName;
+    QString dbUser;
+    QString dbPassword;
 
     QTableWidget *table;
     QLineEdit *nameEdit;
@@ -44,12 +50,15 @@ private:
     QLineEdit *qqEdit;
     QLineEdit *categoryEdit;
     QLineEdit *searchEdit;
+    QLabel *statusLabel;
 
     void setupUi();
+    void loadDbConfig();
     bool initDatabase();
     void loadFromTextIfDbEmpty();
     void refreshTable(const QList<Person> &data);
     QList<Person> queryContacts(const QString &whereClause = QString(), const QVariantList &args = {}) const;
+    int selectedContactId() const;
     Person formPerson() const;
     void clearForm();
 };
