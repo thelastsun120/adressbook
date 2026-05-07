@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
+#include <exception>
+#include <iosfwd>
 
 QT_BEGIN_NAMESPACE
 class QComboBox;
@@ -10,12 +13,32 @@ class QTableWidget;
 class QLabel;
 QT_END_NAMESPACE
 
-struct Person {
+class DbException : public std::exception {
+public:
+    explicit DbException(QString message);
+    const char *what() const noexcept override;
+
+private:
+    std::string msg;
+};
+
+class ContactRecord {
+public:
+    virtual ~ContactRecord() = default;
+    virtual QString displayTag() const = 0;
+};
+
+struct Person : public ContactRecord {
     QString name;
     QString gender;
     QString phone;
     QString qq;
     QString category;
+
+    QString displayTag() const override;
+
+    friend std::ostream &operator<<(std::ostream &out, const Person &person);
+    friend std::istream &operator>>(std::istream &in, Person &person);
 };
 
 class MainWindow : public QMainWindow {
